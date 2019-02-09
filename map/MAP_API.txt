@@ -1,0 +1,8 @@
+AIzaSyCl9mEA7T-iUdXFZnYqWo9ALm98slWZkdc 
+
+git remote add origin https://github.com/sachith16/rideshare.git
+
+git push -u origin master
+
+git remote add origin https://github.com/sachith16/rideshare.git
+git push -u origin master

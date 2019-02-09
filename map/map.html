@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <title>My Google Map</title>
+  <style>
+    #map{
+      height:600px;
+      width:100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="row">
+  <div class="col-sm-3"><p id="distanceA" name="distanceA" style="color: red">Distance A</p></div>
+  <div class="col-sm-3"><p id="distanceB" name="distanceB" style="color: blue">Distance B</p></div>
+  <div class="col-sm-6"><p id="distanceO" name="distanceO">Distance Overlap</p></div>
+  </div>
+  <script src="map.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCl9mEA7T-iUdXFZnYqWo9ALm98slWZkdc&callback=initMap" async defer></script>
+</body>
+</html>
