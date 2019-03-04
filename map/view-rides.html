@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <title>RideShare-View Rides</title>
+</head>
+<body>
+ <table style="width:100%" class="table" id="rides-table">
+ <thead class="thead-dark">
+  <tr>
+    <th>Origin</th>
+    <th>Destination</th>
+  </tr>
+ </thead>
+</table> 
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(e) {
+    $.ajax({
+        type: "POST",
+        url: "/get-all-rides",
+        success: function(result) {
+        	var rides=JSON.parse(result);
+        	for(var i=0; i<rides.length; i++){
+        		var table = document.getElementById("rides-table");
+				// Create an empty <tr> element and add it to the 1st position of the table:
+				var row = table.insertRow(i+1);
+				// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+				var cell1 = row.insertCell(0);
+				var cell2 = row.insertCell(1);
+				// Add some text to the new cells:
+				cell1.innerHTML = rides[i][0];
+				cell2.innerHTML = rides[i][1];
+        	}   
+        },
+        error: function(result) {
+            alert('error:'+result);
+        }
+    });
+});
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <title>RideShare-Sign In</title>
 </head>
 <body>
@@ -11,11 +11,9 @@
     left: 50%;
     -moz-transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translateX(-50%) translateY(-50%);
-    transform: translateX(-50%) translateY(-50%);">
-    <input type="radio" id="rider1" name="radio-group" style="margin-top:10px;"><label for="rider1" style="font-family:'Calibri'; margin-right:20px;">SHARE A RIDE</label>
-    <input type="radio" id="rider2" name="radio-group"><label for="rider2" style="font-family:'Calibri';">WANT A RIDE</label><br/>   
-    <input id='username' placeholder="USERNAME" class="textinput" style="margin-top:10px;">
-    <button id="sub" style="width: 150px; margin-top:10px;">SIGN IN</button>
+    transform: translateX(-50%) translateY(-50%);">       
+    <input id='username' placeholder="USERNAME" class="input-group-addon" style="width: 200px; padding-left:10px;"><br>
+    <button id="sub" style="width: 200px; margin-top:10px;" class="btn btn-secondary">SIGN IN</button>
   </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -33,13 +31,7 @@ $("#sub").click(function(e) {
             if(result=='0'){
             	alert('Invalid username');
             }else{            	
-            	if(document.getElementById('rider1').checked==true){
-            		window.location.href='share-ride'
-            	}else if(document.getElementById('rider2').checked==true){
-
-            	}else{
-            		alert("Check the rider type");
-            	}            	
+            	window.location.href='request-ride';          	
             }
         },
         error: function(result) {

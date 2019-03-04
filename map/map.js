@@ -86,17 +86,9 @@ function initMap(){
 		destination:new google.maps.LatLng(dest_b.getPosition().lat(),dest_b.getPosition().lng()),
 		travelMode: 'DRIVING'
 		};
-		services_b.route(request,function(result,status){
-			if(status =='OK'){
-				display_b.setDirections(result);	
+		services.route(request,function(result,status){
+			if(status =='OK'){	
 				pointsArrayB = result.routes[0].overview_path;				
-				totalDistanceB = 0;
-				var legs = result.routes[0].legs;
-				for(var i=0; i<legs.length; ++i) {
-				    totalDistanceB += legs[i].distance.value;
-				}
-				document.getElementById("distanceB").innerHTML = "Distance B : "+totalDistanceB+"m";
-				matchPoints();
 			}
 		});					
 	}	

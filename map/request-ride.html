@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="manifest" href="script/manifest.json">
+  <title>RideShare-Request a ride</title>  
+</head>
+<body>
+
+<div style="width: 100%;
+display: inline-block;
+  margin: 20px">
+<input id='origin' placeholder="ORIGIN" class="input-group-addon" style="margin-top:0px;">
+<input id='destination' placeholder="DESTINATION" class="input-group-addon" style="margin-left:10px;">
+<button id="sub-req" style="width: 150px; margin-left:10px;" class="btn btn-primary">REQUEST RIDE</button>
+<button id="sub-add" style="width: 150px; margin-left:10px;" class="btn btn-primary">ADD RIDE</button>
+<button id="rmv" style="width: 40px; margin-left:10px;" class="btn btn-danger">X</button>
+</div>
+
+<p id="route-det" style="position:fixed;
+   left:10px;
+   bottom:0px;
+   height:12px;
+   width:100%;
+   font-size:12px;"></p>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script  defer src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=AIzaSyCl9mEA7T-iUdXFZnYqWo9ALm98slWZkdc&callback=initMap"  type="text/javascript"></script>
+<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase-messaging.js"></script>
+<script src="script/request-ride-index.js"></script>
+</body>
+</html>
