@@ -4,6 +4,7 @@ var bodyparser = require('body-parser');
 var sessions = require('express-session');
 var Firebase = require('firebase');
 var path = require('path');
+var socket = require('socket.io');
 //Distance Matrix Setup
 var distance = require('google-distance-matrix');
 distance.key('AIzaSyCl9mEA7T-iUdXFZnYqWo9ALm98slWZkdc');
@@ -14,6 +15,7 @@ var user='';
 var waypoints=[];
 var matchedpoints=[];
 var rqst;
+var feePerKM=30;
 //NPM packages setup
 app.use(bodyparser());
 app.use(sessions({secret:'jr5dbvs9maq'}));
@@ -23,22 +25,15 @@ Firebase.initializeApp({
     serviceAccount: 'rideshare-81bd5-firebase-adminsdk-4of8h-49510167e9.json'
 });
 var db = Firebase.database();
-//Firebase cloud messaging initialization
-var admin = require("firebase-admin");
-
-admin.initializeApp({
-  credential: admin.credential.cert('rideshare-81bd5-firebase-adminsdk-4of8h-49510167e9.json'),
-  databaseURL: "https://rideshare-81bd5.firebaseio.com"
-});
 //App setup
-//Link static route to CSS folder
-app.use('/css',express.static(__dirname+'/css'));
-
 //Link static route to JavaScript folder
 app.use('/script',express.static(__dirname+'/script'));
 
 //Link static route to map folder-contains html files
 app.use('/map',express.static(__dirname+'/map'));
+
+//Link static route to map folder-contains html files
+app.use('/icons',express.static(__dirname+'/icons'));
 
 app.use('/',express.static(__dirname));
 
@@ -64,6 +59,14 @@ app.get("/request-ride",function(req,res){
 
 app.get("/view-rides",function(req,res){
 	res.sendFile('map/view-rides.html',{root:__dirname});
+});
+
+app.get("/test-map",function(req,res){
+	res.sendFile('map/map.html',{root:__dirname});
+});
+
+app.get("/rides-map",function(req,res){
+	res.sendFile('map/map-rides.html',{root:__dirname});
 });
 
 app.post('/login', function(req, res) {
@@ -101,13 +104,14 @@ app.post('/add-ride', function(req, res) {
 	session=req.session;
 	user=session.username;	
 	var ref = db.ref("rides/"+user);
-	ref.set({deviceid: req.body.deviceid,
+	ref.set({username: user,
+			deviceid: req.body.deviceid,
 			origin_name: req.body.origin_name,
 			destination_name: req.body.destination_name,
 			origin: req.body.origin,
 			destination: req.body.destination,
-			waypoints: req.body.waypoints.substr(1).slice(0, -1).split("),("),
-			riders_no: req.body.riders_no }, function(error) {
+			waypoints: req.body.waypoints.substr(1).slice(0, -1).split("),(")
+	}, function(error) {
 		if (error) {
 		  res.end('0');	
 		} else {
@@ -142,19 +146,30 @@ app.post('/remove-ride', function(req, res) {
     	res.end('Error: '+error);
     });		 	
 });
-
+var reads = [];
 app.post('/match-ride', function(req, res) {
 	rqst=req;
 	session=req.session;
 	user=session.username;
 	waypoints=req.body.waypoints.substr(1).slice(0, -1).split("),(");	
 
+	var highestDistance=0;
+	var matchedDeviceID;
+	var sendingDetailsRequested;
+	var sendingDetailsStarted;
+
 	var ref = db.ref("rides");
 
 	ref.once("value",function(snapshot) {
+
+		var snapLength=snapshot.numChildren();
+		var j=0;		
+		
+
 	    if(snapshot.exists()){
 	    	snapshot.forEach((child) => {
 	    		matchedpoints=[];
+	    		reads.push(j);
 				for (var i=0;i<child.val().waypoints.length;i++){					
 				    if(waypoints.includes(child.val().waypoints[i])){
 				    	matchedpoints.push(child.val().waypoints[i]);
@@ -162,16 +177,45 @@ app.post('/match-ride', function(req, res) {
 				}
 				if(matchedpoints.length>1){
 					getDistanceMatch(child.val().origin,child.val().destination,rqst.body.origin,
-						rqst.body.destination,matchedpoints[0],matchedpoints[matchedpoints.length-1],function(result){
+						rqst.body.destination,matchedpoints[0],matchedpoints[matchedpoints.length-1],function(result,duration,costS,costR,distanceM){
 							console.log(result);
+							if(result && distanceM>highestDistance){								
+								matchedDeviceID=child.val().deviceid;
+								
+								sendingDetailsRequested=JSON.stringify({username:child.val().username,
+								device_id:child.val().deviceid,
+								duration : duration,
+								origin_name:child.val().origin_name,
+								destination_name:child.val().destination_name,
+								cost:costR});
 
+								sendingDetailsStarted=JSON.stringify({username:user,
+								device_id:req.body.deviceid,
+								origin_name:req.body.origin_name,
+								destination_name:req.body.destination_name,
+								cost:costS});
+
+								highestDistance=distanceM;
+								if(j==snapLength){
+									//Sending matched details to requested user
+									//io.sockets.connected[rqst.body.deviceid].emit('match',sendingDetailsRequested);
+									//Sending matched details to started user
+									//io.sockets.connected[matchedDeviceID].emit('match',sendingDetailsStarted);
+								}
+							}
 					});
-				}
-			});    		
+				}			
+
+				j=j+1;
+			});	
 	    }else{
 	    	res.end('No rides at the time');
-	    }    
-	});		 	
+	    }
+
+	    return Promise.all("reads");    
+	}).then(function(values) { 
+        console.log(reads);
+    });		 	
 });
 
 function getDistanceMatch(s_o,s_d,r_o,r_d,m_o,m_d,callback){
@@ -181,14 +225,24 @@ function getDistanceMatch(s_o,s_d,r_o,r_d,m_o,m_d,callback){
 	return distance.matrix(origins, destinations, function (err, distances) {
 	    if (distances.status == 'OK') {
 	        if (distances.rows[0].elements[0].status == 'OK' && distances.rows[1].elements[0].status == 'OK' && distances.rows[2].elements[0].status == 'OK') {
+	            //Distance of the ride of started rider
 	            var distanceS = distanceFloat(distances.rows[0].elements[0].distance.text);
+	            //Distance of the ride of requested rider
 	            var distanceR = distanceFloat(distances.rows[1].elements[1].distance.text);
+	            //Distance of the overlapping part
 	            var distanceM = distanceFloat(distances.rows[2].elements[2].distance.text);
+	            //Distance from overlapping origin to requested riders' origin
 	            var distanceP = distanceFloat(distances.rows[3].elements[3].distance.text);
+
 	            console.log(distanceS+" "+distanceR+" "+distanceM+" "+distanceP+" "+distances.rows[4].elements[4].duration.text);
 
+	            //Cost of the ride of started rider
+	            var costS=((distanceS-distanceM)*feePerKM)+((distanceM*feePerKM)/2);
+	            //Cost of the ride of requested rider
+	            var costR=((distanceR-distanceM)*feePerKM)+((distanceM*feePerKM)/2);
+
 	            if((distanceM>(distanceS*0.5) || distanceM>(distanceR*0.5)) && distanceP<5){
-	            	callback(true,);
+	            	callback(true,distances.rows[4].elements[4].duration.text,costS,costR,distanceM);
 	            }else{
 	            	callback(false);
 	            }
@@ -209,6 +263,9 @@ app.post('/get-all-rides', function(req, res) {
 	    		itemSample=[];
 				itemSample.push(child.val().origin_name);
 				itemSample.push(child.val().destination_name);
+				itemSample.push(child.val().origin);
+				itemSample.push(child.val().destination);
+				itemSample.push(child.val().username);
 				items.push(itemSample);			
 			});
 			res.end(JSON.stringify(items));
@@ -216,6 +273,10 @@ app.post('/get-all-rides', function(req, res) {
 	    	res.end(0);
 	    }    
 	});		 	
+});
+
+app.post('/respond-match', function(req, res) {
+	io.sockets.connected[req.body.deviceid].emit('match-response',req.body.response); 		 	
 });
 
 function distanceFloat(distance){
@@ -226,26 +287,14 @@ function distanceFloat(distance){
 	}
 }
 
-function sendMessage(){
-	var message = {
-	  data: {
-	    score: '850',
-	    time: '2:45'
-	  },
-	  token: 'fxI8lRB92Ow:APA91bGuD-obf2IE7A6JxL8_cQEdTa9UhzdjncTwHbpJIJjGBZi5Ya8l1ZcimxeWqOIU5ocwTDSrRKkTzcRg0jpPhYFpyxR_mkKrcxT7vB_8CMfElLCrCRDHoJDLBYQeGQmbPSa_uIuj'
-	};
-
-	admin.messaging().send(message)
-	  .then((response) => {	    
-	    console.log('Successfully sent message:', response);
-	  })
-	  .catch((error) => {
-	    console.log('Error sending message:', error);
-	  });
-}
-
-app.listen(8080,function(){
+var server=app.listen(8080,function(){
 	console.log("Logged");	   
+});
+
+var io = socket(server);
+io.on('connection', (socket) => {
+    socket.emit('initialize', socket.id);
+    //io.sockets.connected[socket.id].emit('initialize',"output");
 });
 
 /*class User{
