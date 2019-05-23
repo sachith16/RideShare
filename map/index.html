@@ -2,19 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <title>RideShare</title>
-
+ </head> 
+<body>
   <div style="position: absolute;
     top: 50%;
     left: 50%;
     -moz-transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);">
-  <button type="button" style="width: 200px;" onclick="window.location.href='sign-in'" >SIGN IN</button><br/>
-  <button type="button" style="width: 200px; margin-top:20px;">SIGN UP</button></div>
-  
-</head>
-<body>
+	  <button type="button" style="width: 200px;" onclick="window.location.href='sign-in'" class="btn btn-secondary">SIGN IN</button><br/>
+	  <button type="button" style="width: 200px; margin-top:20px;" onclick="window.location.href='sign-up'" class="btn btn-secondary">SIGN UP</button><br/>
+	  <button type="button" style="width: 200px; margin-top:20px;" onclick="window.location.href='view-rides'" class="btn btn-secondary">VIEW RIDES</button><br/>
+	  <button type="button" style="width: 200px; margin-top:20px;" id='mapbtn' class="btn btn-secondary">MAP</button><br/>
+  </div>
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$("#mapbtn").click(function(e) {
+    var win=window.open('test-map', '_blank');
+    win.focus();
+});
+</script>
 </html>

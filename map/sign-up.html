@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <title>RideShare-Sign Up</title>
+</head>
+<body>
+ <div style="position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);">
+      
+    <input id='username' placeholder="USERNAME" class="input-group-addon" style="margin-top:5px;"><br>
+    <input id='age' placeholder="AGE" class="input-group-addon" style="margin-top:5px;"><br>
+    <input id='job' placeholder="JOB" class="input-group-addon" style="margin-top:5px;"><br>
+    <input id='living' placeholder="LIVING AREA" class="input-group-addon" style="margin-top:5px;"><br>
+    <button id="sub" class="btn btn-success" style="width: 150px; margin-top:10px;">SIGN UP</button>
+  </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script>
+$("#sub").click(function(e) {
+    e.preventDefault();
+    $.ajax({
+        type: "POST",
+        url: "/signup",
+        data: {            
+            username: $("#username").val(),
+            age: $("#age").val(),
+            job: $("#job").val(),
+            living: $("#living").val()    
+        },
+        success: function(result) {
+            alert(result);
+        },
+        error: function(result) {
+            alert('error:'+result);
+        }
+    });
+});
+</script>
+</body>
+</html>

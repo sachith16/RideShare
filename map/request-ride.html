@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="manifest" href="script/manifest.json">
+  <title>RideShare-Request a ride</title>  
+</head>
+<body>
+
+<div style="margin-top:20px; " class="container">
+	<div class="row justify-content-center">
+		<div class="col-md-3 col-12"><input id='origin' placeholder="ORIGIN" class="input-group-addon" style="margin:1px; width:100%;"></div>
+		<div class="col-md-3 col-12" ><input id='destination' placeholder="DESTINATION" class="input-group-addon" style="margin:1px; width:100%;"></div>
+		<div class="col-md-6 col-12">
+			<button id="sub-req" style="width: 150px; margin:1px;" class="btn btn-primary">REQUEST RIDE</button>
+			<button id="sub-add" style="width: 150px; margin:1px;" class="btn btn-primary">ADD RIDE</button>
+			<button id="rmv" style="width: 40px; margin:1px;" class="btn btn-danger">X</button>
+		</div>
+	</div>
+</div>
+
+<div style="margin-top:20px;
+border-style: solid;
+  border-width: 1px;
+  border-color:grey;
+  padding:20px;
+  visibility:hidden;
+  " class="container" id='match-panel'>
+	<div class="row">
+		<div class="col-12" id='match-details'><p>R</p></div><br/>
+		<div class="col-12" id='user-details'><p>R</p></div>
+		<div class="col-12">
+			<button id="sub-accept" style="width: 150px; margin:1px;" class="btn btn-success">ACCEPT</button>
+			<button id="sub-reject" style="width: 150px; margin:1px;" class="btn btn-danger">REJECT</button></div></div></div>
+<div id="map" style="height:600px; width:100%;"></div>
+<p id="route-det" style="position:fixed;
+   left:10px;
+   bottom:0px;
+   height:12px;
+   width:100%;
+   font-size:12px;"></p>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script  defer src="https://maps.googleapis.com/maps/api/js?libraries=places&language=en&key=AIzaSyCl9mEA7T-iUdXFZnYqWo9ALm98slWZkdc&callback=initMap"  type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+<script src="script/request-ride-index.js"></script>
+</body>
+</html>
